@@ -2,14 +2,67 @@
 
 
 import cmd
+import argparse
+
+
+class TC:
+    # More colors available here:
+    # http://ozzmaker.com/add-colour-to-text-in-python/
+    # and here
+    # https://en.wikipedia.org/wiki/ANSI_escape_code
+    Bold = lambda text: '\033[1m' + text + '\033[0m'
+    Gray = lambda text: '\033[1;30;40m' + text + '\033[0m'
+
+
+class Lexer:
+    def __init__(self):
+        pass
 
 
 class CLC(cmd.Cmd):
-    prompt = 'clc> '
+    prompt = TC.Bold('clc> ')
     intro = 'Welcome to Command Line Calculator'
+    done = False
+    history = 1
 
     def __init__(self):
         super().__init__()
+        self.lexer = Lexer()
+
+    def default(self, cmd):
+        print(f"{self.history:>4d}: {cmd}")
+        self.history += 1
+
+    def do_EOF(self, cmd):
+        print(TC.Bold("All done"))
+        self.done = True
+        return True
+
+    def postcmd(self, stop, cmd):
+        return self.done
+
+
+class Arguments:
+    def __init__(self):
+        parser = argparse.ArgumentParser(
+            prog='clc',
+            usage='clc [command to execute]',
+            formatter_class=argparse.RawTextHelpFormatter)
+        args, leftovers = parser.parse_known_args()
+
+        if leftovers:
+            self.command = ' '.join(leftovers)
+        else:
+            self.command = None
+
+def main():
+    args = Arguments()
+    clc = CLC()
+    if args.command:
+        clc.onecmd(args.command)
+    else:
+        clc.cmdloop()
+
 
 if __name__ == '__main__':
-    CLC().cmdloop()
+    main()
