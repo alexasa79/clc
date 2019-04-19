@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+
+import cmd
+
+
+class CLC(cmd.Cmd):
+    prompt = 'clc> '
+    intro = 'Welcome to Command Line Calculator'
+
+    def __init__(self):
+        super().__init__()
+
+if __name__ == '__main__':
+    CLC().cmdloop()
